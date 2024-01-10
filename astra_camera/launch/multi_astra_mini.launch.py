@@ -16,6 +16,7 @@ def generate_container_node(camera_name, params):
         namespace=camera_name,
         package='rclcpp_components',
         executable='component_container',
+        prefix="xterm -hold -e",
         composable_node_descriptions=[
             ComposableNode(package='astra_camera',
                            plugin='astra_camera::OBCameraNodeFactory',
@@ -49,14 +50,17 @@ def generate_launch_description():
     with open(params_file, 'r') as file:
         default_params = yaml.safe_load(file)
 
-    serial_number1 = "ADA611300CE"
-    serial_number2 = "sn123456789"
+    serial_number1 = "20070830312"
+    serial_number2 = "18072430076"
+    serial_number3 = "20030930109"
     params1 = duplicate_params(default_params, "1", serial_number1)
     params2 = duplicate_params(default_params, "2", serial_number2)
+    params3 = duplicate_params(default_params, "3", serial_number3)
     container1 = generate_container_node("camera1", params1)
     container2 = generate_container_node("camera2", params2)
+    container3 = generate_container_node("camera3", params3)
     # dummy static transformation from camera1 to camera2
-    dummy_tf_node = launch_ros.actions.Node(
+    dummy_tf_node_12 = launch_ros.actions.Node(
         package="tf2_ros",
         executable="static_transform_publisher",
         arguments=[
@@ -70,5 +74,21 @@ def generate_launch_description():
             "camera2_link",
         ],
     )
+    # dummy static transformation from camera1 to camera3
+    dummy_tf_node_13 = launch_ros.actions.Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=[
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "camera1_link",
+            "camera3_link",
+        ],
+    )
+
     return LaunchDescription(
-        [container1, container2, dummy_tf_node])
+        [container1, container2, container3, dummy_tf_node_12, dummy_tf_node_13])
