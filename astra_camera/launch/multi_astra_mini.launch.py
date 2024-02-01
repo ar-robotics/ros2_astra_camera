@@ -91,4 +91,4 @@ def generate_launch_description():
     )
 
     return LaunchDescription(
-        [container1, container2, container3, dummy_tf_node_12, dummy_tf_node_13])
+        [container1, container2, container3])
